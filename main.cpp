@@ -20,6 +20,17 @@ bool testing::FLAGS_gtest_catch_exceptions = true;
 #include <random>
 #include <algorithm> 
 
+#if !__has_include("core/complex.h")
+#include "file_h/complex.h"
+#include "file_h/fraction.h"
+#include "file_h/polynomial.h"
+#include "file_h/matrix.h"
+
+#include "file_h/counting_methods_2.h"
+
+#include "file_h/integral.h"
+#else
+
 #include "core/complex.h"
 #include "core/fraction.h"
 #include "core/polynomial.h"
@@ -28,6 +39,8 @@ bool testing::FLAGS_gtest_catch_exceptions = true;
 #include "numerical/counting_methods_2.h"
 
 #include "numerical/integration/integral.h"
+#endif
+
 
 /// перенаправление потока вывода
 class CoutRedirect {
