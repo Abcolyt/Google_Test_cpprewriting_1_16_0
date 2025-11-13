@@ -812,7 +812,7 @@ namespace Polynomial_counting_methods_2 {
 // Перечисление для методов Ньютона-Котеса
 namespace Integral_Computing_Function {
 
-    using namespace counting_methods_3;
+    //using namespace counting_methods_3;
 
     // Базовая структура для тестовых данных 
     template<typename TArg, typename TResult>
