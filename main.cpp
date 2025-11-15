@@ -990,7 +990,7 @@ namespace Integral_Computing_Function {
             //const int max_iterations = 10;
 
             for (; iterations < config.max_iteration_multiplication; ++iterations) {
-                result = unsafe_integrate<TResult, TArg, Method>(
+                result = unsafe_integrate<Method, TResult, TArg>(
                     config.function, config.a, config.b, current_points
                 );
                 
