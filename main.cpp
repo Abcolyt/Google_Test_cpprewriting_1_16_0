@@ -26,7 +26,7 @@ bool testing::FLAGS_gtest_catch_exceptions = true;
 #include "file_h/polynomial.h"
 #include "file_h/matrix.h"
 
-#include "file_h/counting_methods_2.h"
+#include <file_h/counting_methods_2.h>
 
 #include "file_h/integral.h"
 #else
@@ -36,7 +36,7 @@ bool testing::FLAGS_gtest_catch_exceptions = true;
 #include "core/polynomial.h"
 #include "linalg/matrix.h"
 
-#include "numerical/counting_methods_2.h"
+#include "numerical/.h"
 
 #include "numerical/integration/integral.h"
 #endif
@@ -762,9 +762,9 @@ namespace Polynomial_counting_methods_2 {
     using namespace point_generators;
     TEST(nuton, first_dinamic_data_int) {
         polynomial<int> pol;
-        pol = generateRandomIntCoefficients(3, 9, -20, 20);
+        pol = GenerateRandomIntCoefficients(3, 9, -20, 20);
         //std::cout << pol << '\n';
-        auto Array_xy = generatePointsFuncPtr<int>(pol.get_deg() + 3, -4, 1, pol, std::function<int(polynomial<int>, int)>(polynomialfunctions::f_polyn_x0_<int>));
+        auto Array_xy = GeneratePointsFuncPtr<int>(pol.get_deg() + 3, -4, 1, pol, std::function<int(polynomial<int>, int)>(polynomialfunctions::f_polyn_x0_<int>));
 
         using namespace polynomial_interpolation::nuton2;
         //std::cout << NutonInterpolation(Array_xy);
@@ -780,9 +780,9 @@ namespace Polynomial_counting_methods_2 {
         {
             using Type = int;
             polynomial<Type> pol;
-            pol = generateRandomIntCoefficients(3, 8, -10, 10);
+            pol = GenerateRandomIntCoefficients(3, 8, -10, 10);
             //std::cout << pol << '\n';
-            auto Array_xy = generatePointsFuncPtr<Type>(pol.get_deg() + 3, -4, 1, pol, std::function<Type(polynomial<Type>, Type)>(polynomialfunctions::f_polyn_x0_<Type>));
+            auto Array_xy = GeneratePointsFuncPtr<Type>(pol.get_deg() + 3, -4, 1, pol, std::function<Type(polynomial<Type>, Type)>(polynomialfunctions::f_polyn_x0_<Type>));
 
             using namespace polynomial_interpolation::nuton2;
             //std::cout << NutonInterpolation(Array_xy);
