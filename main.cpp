@@ -707,7 +707,7 @@ namespace Matrix {
 
 namespace Polynomial_counting_methods_2 {
     TEST(nuton, first_static_data1) {
-        using namespace counting_methods_2::polynomial_interpolation::nuton2;
+        using namespace polynomial_interpolation::nuton2;
         std::vector<std::pair<int, int>> Array_xy = { {1, 10}, {2, 20}, {3, 30},  {4,40},{5,50},{6,60},{7,70},{8,80},
             {1, 10}, {2, 20}, {3, 30},{1, 10}, {2, 20}, {3, 30},{1, 10}, {2, 20}, {3, 30},{1, 10}, {2, 20}, {3, 30} };
 
@@ -719,7 +719,7 @@ namespace Polynomial_counting_methods_2 {
         EXPECT_EQ(local_ans.str(), true_ans.str());
     }
     TEST(nuton, second_static_data) {
-        using namespace counting_methods_2::polynomial_interpolation::nuton2;
+        using namespace polynomial_interpolation::nuton2;
         std::vector<std::pair<int, int>> Array_xy = {
         {1, 11}, {2, 21}, {3, 31}, {4,41}, {5,51},
         {1, 999}, {2, 888}, {3, 777},
@@ -743,7 +743,7 @@ namespace Polynomial_counting_methods_2 {
         return points;
     }
     TEST(nuton, third_static_data) {
-        using namespace counting_methods_2::polynomial_interpolation::nuton2;
+        using namespace polynomial_interpolation::nuton2;
 
 
         auto Func = [](float x) { return  1 + 10 * x + 10 * x * x + 10 * x * x * x + 10 * x * x * x * x; };
@@ -757,7 +757,7 @@ namespace Polynomial_counting_methods_2 {
         EXPECT_EQ(local_ans.str(), true_ans.str());
     }
 
-    using namespace counting_methods_2::polynomial_interpolation::nuton2;
+    using namespace polynomial_interpolation::nuton2;
     using namespace technical_functions;
     using namespace point_generators;
     TEST(nuton, first_dinamic_data_int) {
@@ -766,7 +766,7 @@ namespace Polynomial_counting_methods_2 {
         //std::cout << pol << '\n';
         auto Array_xy = generatePointsFuncPtr<int>(pol.get_deg() + 3, -4, 1, pol, std::function<int(polynomial<int>, int)>(polynomialfunctions::f_polyn_x0_<int>));
 
-        using namespace counting_methods_2::polynomial_interpolation::nuton2;
+        using namespace polynomial_interpolation::nuton2;
         //std::cout << NutonInterpolation(Array_xy);
 
 
@@ -784,7 +784,7 @@ namespace Polynomial_counting_methods_2 {
             //std::cout << pol << '\n';
             auto Array_xy = generatePointsFuncPtr<Type>(pol.get_deg() + 3, -4, 1, pol, std::function<Type(polynomial<Type>, Type)>(polynomialfunctions::f_polyn_x0_<Type>));
 
-            using namespace counting_methods_2::polynomial_interpolation::nuton2;
+            using namespace polynomial_interpolation::nuton2;
             //std::cout << NutonInterpolation(Array_xy);
 
 
