@@ -26,7 +26,7 @@ bool testing::FLAGS_gtest_catch_exceptions = true;
 #include "file_h/polynomial.h"
 #include "file_h/matrix.h"
 
-#include <file_h/counting_methods_2.h>
+#include <file_h/interpolators.h>
 
 #include "file_h/integral.h"
 #else
