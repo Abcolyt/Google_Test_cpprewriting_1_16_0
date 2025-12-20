@@ -434,7 +434,7 @@ namespace Matrix {
         matrix<double> A = T * A_diag * T_inv;
 
         // Вычисление собственных значений
-        std::vector<std::complex<double>> eigenvalues = matrixfunction::compute_eigenvalues(A);
+        std::vector<std::complex<double>> eigenvalues = matrixfunction::ComputeEigenvalues(A);
         ASSERT_EQ(eigenvalues.size(), n) << "Количество собственных значений не совпадает";
 
         // Проверка мнимых частей и сбор вещественных частей
@@ -549,7 +549,7 @@ namespace Matrix {
 
 
         std::vector<std::complex<double>> wrap_compute_eigenvalues(const matrix<double>& m) {
-            return matrixfunction::compute_eigenvalues(m);
+            return matrixfunction::ComputeEigenvalues(m);
         }
 
 
@@ -577,10 +577,10 @@ namespace Matrix {
             EigenvaluesTest,
             ::testing::Values(
                 TestParams{ 4 , wrap_compute_eigenvalues, "eig" },
-                TestParams{ 7 , [](auto& m) { return matrixfunction::compute_eigenvalues(m); }, "eig" },
-                TestParams{ 50, [](auto& m) { return matrixfunction::compute_eigenvalues(m); }, "eig" },
-                TestParams{ 10, [](auto& m) { return matrixfunction::compute_eigenvalues_3_qr(m); }, "eig_3_qr" },
-                TestParams{ 50, [](auto& m) { return matrixfunction::compute_eigenvalues_3_qr(m); }, "eig_3_qr" }
+                TestParams{ 7 , [](auto& m) { return matrixfunction::ComputeEigenvalues(m); }, "eig" },
+                TestParams{ 50, [](auto& m) { return matrixfunction::ComputeEigenvalues(m); }, "eig" },
+                TestParams{ 10, [](auto& m) { return matrixfunction::ComputeEigenvalues3QR(m); }, "eig_3_qr" },
+                TestParams{ 50, [](auto& m) { return matrixfunction::ComputeEigenvalues3QR(m); }, "eig_3_qr" }
             ),
             TestParamNameGenerator()
         );
@@ -662,7 +662,7 @@ namespace Matrix {
         };
 
         std::vector<std::complex<double>> wrap_compute_eigenvalues(const matrix<double>& m) {
-            return matrixfunction::compute_eigenvalues(m);
+            return matrixfunction::ComputeEigenvalues(m);
         }
 
         std::ostream& operator<<(std::ostream& os, const TestParams& params) {
@@ -689,10 +689,10 @@ namespace Matrix {
             EigenvaluesTest,
             ::testing::Values(
                 TestParams{ 4 , wrap_compute_eigenvalues, "eig" },
-                TestParams{ 7 , [](auto& m) { return matrixfunction::compute_eigenvalues(m); }, "eig" },
-                TestParams{ 50, [](auto& m) { return matrixfunction::compute_eigenvalues(m); }, "eig" },
-                TestParams{ 10, [](auto& m) { return matrixfunction::compute_eigenvalues_3_qr(m); }, "eig_3_qr" },
-                TestParams{ 50, [](auto& m) { return matrixfunction::compute_eigenvalues_3_qr(m); }, "eig_3_qr" }
+                TestParams{ 7 , [](auto& m) { return matrixfunction::ComputeEigenvalues(m); }, "eig" },
+                TestParams{ 50, [](auto& m) { return matrixfunction::ComputeEigenvalues(m); }, "eig" },
+                TestParams{ 10, [](auto& m) { return matrixfunction::ComputeEigenvalues3QR(m); }, "eig_3_qr" },
+                TestParams{ 50, [](auto& m) { return matrixfunction::ComputeEigenvalues3QR(m); }, "eig_3_qr" }
             ),
             TestParamNameGenerator()
         );
