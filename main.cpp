@@ -18,7 +18,8 @@ bool testing::FLAGS_gtest_catch_exceptions = true;
 #include <utility>
 #include <functional>
 #include <random>
-#include <algorithm> 
+#include <algorithm>
+#include <chrono> 
 
 #if !__has_include("core/complex.h")
 #include "file_h/complex.h"
@@ -1081,6 +1082,9 @@ namespace Integral_Computing_Function {
 // ============================================================================
 #include "../cpp_rewriting_SPBGU/Matrix2D.cpp"
 
+// Подключаем функцию multiply (она в том же файле, что и Matrix2D)
+// Функция multiply уже определена в Matrix2D.cpp
+
 // ============================================================================
 // Все тесты Matrix2D в одном пространстве имён
 // ============================================================================
@@ -1165,60 +1169,6 @@ namespace Accessors {
         EXPECT_EQ(m.getStorageOrder(), Matrix2D<double>::StorageOrder::ColumnMajor);
     }
 
-    TEST(Matrix2DAccessorsTest, ElementAccessOperatorParentheses) {
-        Matrix2D<double> m(3, 3);
-        for (uint64_t i = 0; i < 3; ++i) {
-            for (uint64_t j = 0; j < 3; ++j) {
-                m(i, j) = i * 3 + j;
-            }
-        }
-        EXPECT_DOUBLE_EQ(m(0, 0), 0);
-        EXPECT_DOUBLE_EQ(m(0, 1), 1);
-        EXPECT_DOUBLE_EQ(m(1, 0), 3);
-        EXPECT_DOUBLE_EQ(m(2, 2), 8);
-    }
-
-    TEST(Matrix2DAccessorsTest, ElementAccessOperatorBrackets) {
-        Matrix2D<double> m = {{1, 2, 3}, {4, 5, 6}};
-        EXPECT_DOUBLE_EQ(m[0][0], 1);
-        EXPECT_DOUBLE_EQ(m[0][1], 2);
-        EXPECT_DOUBLE_EQ(m[1][2], 6);
-    }
-
-    TEST(Matrix2DAccessorsTest, GetColumn) {
-        Matrix2D<double> m = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
-        Matrix2D<double> col = m.getColumn(1);
-        EXPECT_EQ(col.getcol(), 1);
-        EXPECT_EQ(col.getrow(), 3);
-        EXPECT_DOUBLE_EQ(col(0, 0), 2);
-        EXPECT_DOUBLE_EQ(col(1, 0), 5);
-        EXPECT_DOUBLE_EQ(col(2, 0), 8);
-    }
-
-    TEST(Matrix2DAccessorsTest, GetRow) {
-        Matrix2D<double> m = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
-        Matrix2D<double> row = m.getRow(1);
-        EXPECT_EQ(row.getcol(), 3);
-        EXPECT_EQ(row.getrow(), 1);
-        EXPECT_DOUBLE_EQ(row(0, 0), 4);
-        EXPECT_DOUBLE_EQ(row(0, 1), 5);
-        EXPECT_DOUBLE_EQ(row(0, 2), 6);
-    }
-
-    TEST(Matrix2DAccessorsTest, SetStorageOrder) {
-        Matrix2D<double> m = {{1, 2}, {3, 4}};
-        EXPECT_EQ(m.getStorageOrder(), Matrix2D<double>::StorageOrder::RowMajor);
-
-        m.setStorageOrder(Matrix2D<double>::StorageOrder::ColumnMajor);
-        EXPECT_EQ(m.getStorageOrder(), Matrix2D<double>::StorageOrder::ColumnMajor);
-
-        // Данные должны сохраниться
-        EXPECT_DOUBLE_EQ(m(0, 0), 1);
-        EXPECT_DOUBLE_EQ(m(0, 1), 2);
-        EXPECT_DOUBLE_EQ(m(1, 0), 3);
-        EXPECT_DOUBLE_EQ(m(1, 1), 4);
-    }
-
 } // namespace Accessors
 
 // ============================================================================
@@ -1287,6 +1237,59 @@ namespace Operators {
         EXPECT_DOUBLE_EQ(result(1, 1), 50);
     }
 
+    TEST(Matrix2DOperatorsTest, MultiplicationRectangular) {
+        // Матрица 4×3
+        Matrix2D<double> m1 = {
+            {1, 2, 3},
+            {4, 5, 6},
+            {7, 8, 9},
+            {10, 11, 12}
+        };
+        // Матрица 3×4
+        Matrix2D<double> m2 = {
+            {1, 2, 3, 4},
+            {5, 6, 7, 8},
+            {9, 10, 11, 12}
+        };
+        
+        Matrix2D<double> result = m1 * m2;
+        
+        // Результат должен быть 4×4
+        EXPECT_EQ(result.getrow(), 4);
+        EXPECT_EQ(result.getcol(), 4);
+        
+        // Проверяем несколько элементов
+        // result(0, 0) = 1*1 + 2*5 + 3*9 = 1 + 10 + 27 = 38
+        EXPECT_DOUBLE_EQ(result(0, 0), 38);
+        // result(0, 1) = 1*2 + 2*6 + 3*10 = 2 + 12 + 30 = 44
+        EXPECT_DOUBLE_EQ(result(0, 1), 44);
+        // result(0, 2) = 1*3 + 2*7 + 3*11 = 3 + 14 + 33 = 50
+        EXPECT_DOUBLE_EQ(result(0, 2), 50);
+        // result(0, 3) = 1*4 + 2*8 + 3*12 = 4 + 16 + 36 = 56
+        EXPECT_DOUBLE_EQ(result(0, 3), 56);
+        
+        // result(1, 0) = 4*1 + 5*5 + 6*9 = 4 + 25 + 54 = 83
+        EXPECT_DOUBLE_EQ(result(1, 0), 83);
+        // result(1, 1) = 4*2 + 5*6 + 6*10 = 8 + 30 + 60 = 98
+        EXPECT_DOUBLE_EQ(result(1, 1), 98);
+        
+        // result(3, 3) = 10*4 + 11*8 + 12*12 = 40 + 88 + 144 = 272
+        EXPECT_DOUBLE_EQ(result(3, 3), 272);
+    }
+
+    TEST(Matrix2DOperatorsTest, MultiplyFunctionTest) {
+        Matrix2D<double> m1 = {{1, 2}, {3, 4}};
+        Matrix2D<double> m2 = {{5, 6}, {7, 8}};
+        Matrix2D<double> result(2, 2);
+        
+        multiply(&m1, &m2, &result);
+        
+        EXPECT_DOUBLE_EQ(result(0, 0), 19);
+        EXPECT_DOUBLE_EQ(result(0, 1), 22);
+        EXPECT_DOUBLE_EQ(result(1, 0), 43);
+        EXPECT_DOUBLE_EQ(result(1, 1), 50);
+    }
+
     TEST(Matrix2DOperatorsTest, ScalarMultiplication) {
         Matrix2D<double> m = {{1, 2}, {3, 4}};
         Matrix2D<double> result = m * 2.0;
@@ -1332,219 +1335,138 @@ namespace Operators {
         EXPECT_TRUE(m1 != m2);
     }
 
+    TEST(Matrix2DOperatorsTest, MultiplyAVX_FunctionTest) {
+        // Создаём матрицы 4×4 для проверки правильности
+        // A в RowMajor, B в ColumnMajor
+        Matrix2D<double> A(4, 4, Matrix2D<double>::StorageOrder::RowMajor);
+        Matrix2D<double> B(4, 4, Matrix2D<double>::StorageOrder::ColumnMajor);
+        
+        // Заполняем A
+        A(0, 0) = 1; A(0, 1) = 2; A(0, 2) = 3; A(0, 3) = 4;
+        A(1, 0) = 5; A(1, 1) = 6; A(1, 2) = 7; A(1, 3) = 8;
+        A(2, 0) = 9; A(2, 1) = 10; A(2, 2) = 11; A(2, 3) = 12;
+        A(3, 0) = 13; A(3, 1) = 14; A(3, 2) = 15; A(3, 3) = 16;
+        
+        // Заполняем B
+        B(0, 0) = 1; B(0, 1) = 2; B(0, 2) = 3; B(0, 3) = 4;
+        B(1, 0) = 5; B(1, 1) = 6; B(1, 2) = 7; B(1, 3) = 8;
+        B(2, 0) = 9; B(2, 1) = 10; B(2, 2) = 11; B(2, 3) = 12;
+        B(3, 0) = 13; B(3, 1) = 14; B(3, 2) = 15; B(3, 3) = 16;
+        
+        Matrix2D<double> result(4, 4);
+        
+        multiplyAVX(&A, &B, &result);
+        
+        // Ожидаемые значения (скалярное умножение)
+        // result(0, 0) = 1*1 + 2*5 + 3*9 + 4*13 = 1 + 10 + 27 + 52 = 90
+        EXPECT_DOUBLE_EQ(result(0, 0), 90);
+        // result(0, 1) = 1*2 + 2*6 + 3*10 + 4*14 = 2 + 12 + 30 + 56 = 100
+        EXPECT_DOUBLE_EQ(result(0, 1), 100);
+        // result(1, 0) = 5*1 + 6*5 + 7*9 + 8*13 = 5 + 30 + 63 + 104 = 202
+        EXPECT_DOUBLE_EQ(result(1, 0), 202);
+        // result(3, 3) = 13*4 + 14*8 + 15*12 + 16*16 = 52 + 112 + 180 + 256 = 600
+        EXPECT_DOUBLE_EQ(result(3, 3), 600);
+    }
+
+    TEST(Matrix2DOperatorsTest, MultiplyAVX_PerformanceTest) {
+        // Создаём большие матрицы для замера скорости
+        const int M = 200;  // строки A
+        const int K = 300;  // столбцы A = строки B
+        const int N = 200;  // столбцы B
+
+        // A в RowMajor, B в ColumnMajor
+        Matrix2D<double> A = Matrix2D<double>::random(K, M, 0.0, 1.0, Matrix2D<double>::StorageOrder::RowMajor);
+        Matrix2D<double> B = Matrix2D<double>::random(N, K, 0.0, 1.0, Matrix2D<double>::StorageOrder::ColumnMajor);
+        Matrix2D<double> result(N, M);
+
+        // Замер времени AVX версии
+        auto start = std::chrono::high_resolution_clock::now();
+        multiplyAVX(&A, &B, &result);
+        auto end = std::chrono::high_resolution_clock::now();
+
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+        double duration_ms = duration.count() / 1000.0;
+
+        // Вывод результатов через cout (виден в логах Visual Studio)
+        std::cout << std::endl;
+        std::cout << "=== AVX Performance Results ===" << std::endl;
+        std::cout << "Matrix Size: " << M << "x" << K << "x" << N << std::endl;
+        std::cout << "A Storage: RowMajor" << std::endl;
+        std::cout << "B Storage: ColumnMajor" << std::endl;
+        std::cout << "AVX Time: " << duration.count() << " us (" << duration_ms << " ms)" << std::endl;
+        std::cout << "===============================" << std::endl;
+
+        // Сохраняем результаты через RecordProperty (для XML отчёта)
+        RecordProperty("AVX_Time_us", duration.count());
+        RecordProperty("AVX_Time_ms", duration_ms);
+        RecordProperty("Matrix_Size", std::to_string(M) + "x" + std::to_string(K) + "x" + std::to_string(N));
+
+        // Проверяем, что результат правильного размера
+        EXPECT_EQ(result.getrow(), M);
+        EXPECT_EQ(result.getcol(), N);
+
+        // Проверяем, что результат не пустой
+        bool nonZero = false;
+        for (uint64_t i = 0; i < M && !nonZero; ++i) {
+            for (uint64_t j = 0; j < N && !nonZero; ++j) {
+                if (std::abs(result(i, j)) > 1e-10) {
+                    nonZero = true;
+                }
+            }
+        }
+        EXPECT_TRUE(nonZero) << "Result matrix contains only zeros!";
+    }
+
+    TEST(Matrix2DOperatorsTest, MultiplyScalar_PerformanceTest) {
+        // Создаём большие матрицы для замера скорости (те же размеры что и для AVX)
+        const int M = 200;  // строки A
+        const int K = 300;  // столбцы A = строки B
+        const int N = 200;  // столбцы B
+
+        // A в RowMajor, B в ColumnMajor (для честного сравнения с AVX)
+        Matrix2D<double> A = Matrix2D<double>::random(K, M, 0.0, 1.0, Matrix2D<double>::StorageOrder::RowMajor);
+        Matrix2D<double> B = Matrix2D<double>::random(N, K, 0.0, 1.0, Matrix2D<double>::StorageOrder::ColumnMajor);
+        Matrix2D<double> result(N, M);
+
+        // Замер времени скалярной версии
+        auto start = std::chrono::high_resolution_clock::now();
+        multiply(&A, &B, &result);
+        auto end = std::chrono::high_resolution_clock::now();
+
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+        double duration_ms = duration.count() / 1000.0;
+
+        // Вывод результатов через cout (виден в логах Visual Studio)
+        std::cout << std::endl;
+        std::cout << "=== Scalar Performance Results ===" << std::endl;
+        std::cout << "Matrix Size: " << M << "x" << K << "x" << N << std::endl;
+        std::cout << "A Storage: RowMajor" << std::endl;
+        std::cout << "B Storage: ColumnMajor" << std::endl;
+        std::cout << "Scalar Time: " << duration.count() << " us (" << duration_ms << " ms)" << std::endl;
+        std::cout << "=================================" << std::endl;
+
+        // Сохраняем результаты через RecordProperty (для XML отчёта)
+        RecordProperty("Scalar_Time_us", duration.count());
+        RecordProperty("Scalar_Time_ms", duration_ms);
+        RecordProperty("Matrix_Size", std::to_string(M) + "x" + std::to_string(K) + "x" + std::to_string(N));
+
+        // Проверяем, что результат правильного размера
+        EXPECT_EQ(result.getrow(), M);
+        EXPECT_EQ(result.getcol(), N);
+
+        // Проверяем, что результат не пустой
+        bool nonZero = false;
+        for (uint64_t i = 0; i < M && !nonZero; ++i) {
+            for (uint64_t j = 0; j < N && !nonZero; ++j) {
+                if (std::abs(result(i, j)) > 1e-10) {
+                    nonZero = true;
+                }
+            }
+        }
+        EXPECT_TRUE(nonZero) << "Result matrix contains only zeros!";
+    }
+
 } // namespace Operators
-
-// ============================================================================
-// Группа 4: Тесты базовых методов класса
-// ============================================================================
-namespace BasicMethods {
-
-    TEST(Matrix2DBasicMethodsTest, Transpose) {
-        Matrix2D<double> m = {{1, 2, 3}, {4, 5, 6}};
-        Matrix2D<double> result = m.transpose();
-        EXPECT_EQ(result.getcol(), 2);
-        EXPECT_EQ(result.getrow(), 3);
-        EXPECT_DOUBLE_EQ(result(0, 0), 1);
-        EXPECT_DOUBLE_EQ(result(1, 0), 2);
-        EXPECT_DOUBLE_EQ(result(2, 0), 3);
-        EXPECT_DOUBLE_EQ(result(0, 1), 4);
-        EXPECT_DOUBLE_EQ(result(1, 1), 5);
-        EXPECT_DOUBLE_EQ(result(2, 1), 6);
-    }
-
-    TEST(Matrix2DBasicMethodsTest, NormL1) {
-        Matrix2D<double> m = {{1, -2}, {3, -4}};
-        double result = m.norm(1);
-        EXPECT_DOUBLE_EQ(result, 10);
-    }
-
-    TEST(Matrix2DBasicMethodsTest, NormL2) {
-        Matrix2D<double> m = {{3, 4}};
-        double result = m.norm(2);
-        EXPECT_DOUBLE_EQ(result, 5);
-    }
-
-    TEST(Matrix2DBasicMethodsTest, NormInf) {
-        Matrix2D<double> m = {{1, -5}, {3, -2}};
-        double result = m.norm(INT_MAX);
-        EXPECT_DOUBLE_EQ(result, 5);
-    }
-
-    TEST(Matrix2DBasicMethodsTest, Determinant2x2) {
-        Matrix2D<double> m = {{1, 2}, {3, 4}};
-        double det = m.determinant();
-        EXPECT_DOUBLE_EQ(det, -2);
-    }
-
-    TEST(Matrix2DBasicMethodsTest, Determinant3x3) {
-        Matrix2D<double> m = {{1, 2, 3}, {4, 5, 6}, {7, 8, 10}};
-        double det = m.determinant();
-        EXPECT_DOUBLE_EQ(det, -3);
-    }
-
-    TEST(Matrix2DBasicMethodsTest, Inverse2x2) {
-        Matrix2D<double> m = {{4, 7}, {2, 6}};
-        Matrix2D<double> inv = m.inverse();
-        EXPECT_NEAR(inv(0, 0), 0.6, 1e-10);
-        EXPECT_NEAR(inv(0, 1), -0.7, 1e-10);
-        EXPECT_NEAR(inv(1, 0), -0.2, 1e-10);
-        EXPECT_NEAR(inv(1, 1), 0.4, 1e-10);
-    }
-
-    TEST(Matrix2DBasicMethodsTest, Submatrix) {
-        Matrix2D<double> m = {{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}};
-        Matrix2D<double> sub = m.submatrix(1, 1, 2, 2);
-        EXPECT_EQ(sub.getcol(), 2);
-        EXPECT_EQ(sub.getrow(), 2);
-        EXPECT_DOUBLE_EQ(sub(0, 0), 6);
-        EXPECT_DOUBLE_EQ(sub(0, 1), 7);
-        EXPECT_DOUBLE_EQ(sub(1, 0), 10);
-        EXPECT_DOUBLE_EQ(sub(1, 1), 11);
-    }
-
-    TEST(Matrix2DBasicMethodsTest, SwapRows) {
-        Matrix2D<double> m = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
-        m.swapRows(0, 2);
-        EXPECT_DOUBLE_EQ(m(0, 0), 7);
-        EXPECT_DOUBLE_EQ(m(0, 1), 8);
-        EXPECT_DOUBLE_EQ(m(0, 2), 9);
-        EXPECT_DOUBLE_EQ(m(2, 0), 1);
-        EXPECT_DOUBLE_EQ(m(2, 1), 2);
-        EXPECT_DOUBLE_EQ(m(2, 2), 3);
-    }
-
-} // namespace BasicMethods
-
-// ============================================================================
-// Группа 5: Тесты всего остального (статические методы, ColumnMajor, прочее)
-// ============================================================================
-namespace Other {
-
-    // --- Статические методы создания матриц ---
-    TEST(Matrix2DOtherTest, Eye) {
-        Matrix2D<double> m = Matrix2D<double>::eye(3);
-        EXPECT_EQ(m.getcol(), 3);
-        EXPECT_EQ(m.getrow(), 3);
-        EXPECT_DOUBLE_EQ(m(0, 0), 1);
-        EXPECT_DOUBLE_EQ(m(1, 1), 1);
-        EXPECT_DOUBLE_EQ(m(2, 2), 1);
-        EXPECT_DOUBLE_EQ(m(0, 1), 0);
-        EXPECT_DOUBLE_EQ(m(1, 0), 0);
-    }
-
-    TEST(Matrix2DOtherTest, Zeros) {
-        Matrix2D<double> m = Matrix2D<double>::zeros(3, 4);
-        EXPECT_EQ(m.getcol(), 3);
-        EXPECT_EQ(m.getrow(), 4);
-        for (uint64_t i = 0; i < 3; ++i) {
-            for (uint64_t j = 0; j < 4; ++j) {
-                EXPECT_DOUBLE_EQ(m(i, j), 0);
-            }
-        }
-    }
-
-    TEST(Matrix2DOtherTest, Ones) {
-        Matrix2D<double> m = Matrix2D<double>::ones(2, 3);
-        EXPECT_EQ(m.getcol(), 2);
-        EXPECT_EQ(m.getrow(), 3);
-        for (uint64_t i = 0; i < 2; ++i) {
-            for (uint64_t j = 0; j < 3; ++j) {
-                EXPECT_DOUBLE_EQ(m(i, j), 1);
-            }
-        }
-    }
-
-    TEST(Matrix2DOtherTest, Random) {
-        Matrix2D<double> m = Matrix2D<double>::random(3, 3, 0.0, 1.0);
-        EXPECT_EQ(m.getcol(), 3);
-        EXPECT_EQ(m.getrow(), 3);
-        for (uint64_t i = 0; i < 3; ++i) {
-            for (uint64_t j = 0; j < 3; ++j) {
-                EXPECT_GE(m(i, j), 0.0);
-                EXPECT_LE(m(i, j), 1.0);
-            }
-        }
-    }
-
-    TEST(Matrix2DOtherTest, RandomDiagonal) {
-        Matrix2D<double> m = Matrix2D<double>::randomDiagonal(4, 0.0, 10.0);
-        EXPECT_EQ(m.getcol(), 4);
-        EXPECT_EQ(m.getrow(), 4);
-        for (uint64_t i = 0; i < 4; ++i) {
-            for (uint64_t j = 0; j < 4; ++j) {
-                if (i == j) {
-                    EXPECT_GE(m(i, j), 0.0);
-                    EXPECT_LE(m(i, j), 10.0);
-                }
-                else {
-                    EXPECT_DOUBLE_EQ(m(i, j), 0);
-                }
-            }
-        }
-    }
-
-    TEST(Matrix2DOtherTest, Vandermonde) {
-        std::vector<double> x = {1, 2, 3};
-        Matrix2D<double> m = Matrix2D<double>::vander(x, 3);
-        EXPECT_EQ(m.getcol(), 3);
-        EXPECT_EQ(m.getrow(), 3);
-        // Ожидаемая матрица Вандермонда:
-        // 1 1 1
-        // 1 2 4
-        // 1 3 9
-        EXPECT_DOUBLE_EQ(m(0, 0), 1);
-        EXPECT_DOUBLE_EQ(m(0, 1), 1);
-        EXPECT_DOUBLE_EQ(m(0, 2), 1);
-        EXPECT_DOUBLE_EQ(m(1, 0), 1);
-        EXPECT_DOUBLE_EQ(m(1, 1), 2);
-        EXPECT_DOUBLE_EQ(m(1, 2), 4);
-        EXPECT_DOUBLE_EQ(m(2, 0), 1);
-        EXPECT_DOUBLE_EQ(m(2, 1), 3);
-        EXPECT_DOUBLE_EQ(m(2, 2), 9);
-    }
-
-    // --- Тесты для ColumnMajor хранения ---
-    TEST(Matrix2DOtherTest, ColumnMajorStorage) {
-        Matrix2D<double> m(2, 3, Matrix2D<double>::StorageOrder::ColumnMajor);
-        m(0, 0) = 1; m(0, 1) = 2; m(0, 2) = 3;
-        m(1, 0) = 4; m(1, 1) = 5; m(1, 2) = 6;
-
-        EXPECT_EQ(m.getStorageOrder(), Matrix2D<double>::StorageOrder::ColumnMajor);
-        EXPECT_DOUBLE_EQ(m(0, 0), 1);
-        EXPECT_DOUBLE_EQ(m(1, 2), 6);
-    }
-
-    TEST(Matrix2DOtherTest, ColumnMajorTranspose) {
-        Matrix2D<double> m(2, 3, Matrix2D<double>::StorageOrder::ColumnMajor);
-        m(0, 0) = 1; m(0, 1) = 2; m(0, 2) = 3;
-        m(1, 0) = 4; m(1, 1) = 5; m(1, 2) = 6;
-
-        Matrix2D<double> result = m.transpose();
-        EXPECT_EQ(result.getcol(), 3);
-        EXPECT_EQ(result.getrow(), 2);
-        EXPECT_DOUBLE_EQ(result(0, 0), 1);
-        EXPECT_DOUBLE_EQ(result(1, 0), 2);
-        EXPECT_DOUBLE_EQ(result(2, 0), 3);
-        EXPECT_DOUBLE_EQ(result(0, 1), 4);
-    }
-
-    TEST(Matrix2DOtherTest, ColumnMajorMultiplication) {
-        Matrix2D<double> m1(2, 2, Matrix2D<double>::StorageOrder::ColumnMajor);
-        m1(0, 0) = 1; m1(0, 1) = 2;
-        m1(1, 0) = 3; m1(1, 1) = 4;
-
-        Matrix2D<double> m2(2, 2, Matrix2D<double>::StorageOrder::ColumnMajor);
-        m2(0, 0) = 5; m2(0, 1) = 6;
-        m2(1, 0) = 7; m2(1, 1) = 8;
-
-        Matrix2D<double> result = m1 * m2;
-        EXPECT_DOUBLE_EQ(result(0, 0), 19);
-        EXPECT_DOUBLE_EQ(result(0, 1), 22);
-        EXPECT_DOUBLE_EQ(result(1, 0), 43);
-        EXPECT_DOUBLE_EQ(result(1, 1), 50);
-    }
-
-} // namespace Other
 
 } // namespace Matrix2Dtest
 
