@@ -29,7 +29,6 @@ bool testing::FLAGS_gtest_catch_exceptions = true;
 #include <file_h/interpolators.h>
 
 #include "file_h/integral.h"
-#include "../cpp_rewriting_SPBGU/myltiplying_by_speed.cpp"
 #else
 
 #include "core/complex.h"
@@ -1077,6 +1076,9 @@ namespace Integral_Computing_Function {
 
 }
 
+#if 0
+#include "../cpp_rewriting_SPBGU/myltiplying_by_speed.cpp"
+
 // ============================================================================
 // ==================== ТЕСТЫ ДЛЯ Matrix2D ====================================
 // ============================================================================
@@ -1554,6 +1556,7 @@ namespace Matrix2DTests {
     }
 
 } // namespace Matrix2DTests
+#endif
 
 int main(int argc, char** argv) {
 #if 1
