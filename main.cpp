@@ -1370,9 +1370,9 @@ namespace Operators {
 
     TEST(Matrix2DOperatorsTest, MultiplyAVX_PerformanceTest) {
         // Создаём большие матрицы для замера скорости
-        const int M = 200;  // строки A
-        const int K = 300;  // столбцы A = строки B
-        const int N = 200;  // столбцы B
+        const int M = 800;  // строки A
+        const int K = 1200;  // столбцы A = строки B
+        const int N = 800;  // столбцы B
 
         // A в RowMajor, B в ColumnMajor
         Matrix2D<double> A = Matrix2D<double>::random(K, M, 0.0, 1.0, Matrix2D<double>::StorageOrder::RowMajor);
@@ -1419,9 +1419,9 @@ namespace Operators {
 
     TEST(Matrix2DOperatorsTest, MultiplyScalar_PerformanceTest) {
         // Создаём большие матрицы для замера скорости (те же размеры что и для AVX)
-        const int M = 200;  // строки A
-        const int K = 300;  // столбцы A = строки B
-        const int N = 200;  // столбцы B
+        const int M = 800;  // строки A
+        const int K = 1200;  // столбцы A = строки B
+        const int N = 800;  // столбцы B
 
         // A в RowMajor, B в ColumnMajor (для честного сравнения с AVX)
         Matrix2D<double> A = Matrix2D<double>::random(K, M, 0.0, 1.0, Matrix2D<double>::StorageOrder::RowMajor);
