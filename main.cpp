@@ -1076,12 +1076,11 @@ namespace Integral_Computing_Function {
 
 }
 
-#if 0
-#include "../cpp_rewriting_SPBGU/myltiplying_by_speed.cpp"
-
 // ============================================================================
 // ==================== ТЕСТЫ ДЛЯ Matrix2D ====================================
 // ============================================================================
+#include "../cpp_rewriting_SPBGU/Matrix2D.cpp"
+
 namespace Matrix2DTests {
 
     /// <summary>
@@ -1146,18 +1145,6 @@ namespace Matrix2DTests {
         EXPECT_DOUBLE_EQ(m2(0, 0), 1);
     }
 
-    TEST(Matrix2DTest, ConstructorFromMatrix) {
-        matrix<double> m(2, 3);
-        m[0][0] = 1; m[0][1] = 2; m[0][2] = 3;
-        m[1][0] = 4; m[1][1] = 5; m[1][2] = 6;
-
-        Matrix2D<double> m2d(m);
-        EXPECT_EQ(m2d.getcol(), 2);
-        EXPECT_EQ(m2d.getrow(), 3);
-        EXPECT_DOUBLE_EQ(m2d(0, 0), 1);
-        EXPECT_DOUBLE_EQ(m2d(1, 2), 6);
-    }
-
     // ------------------- Тесты операторов присваивания -------------------
 
     TEST(Matrix2DTest, CopyAssignmentOperator) {
@@ -1177,18 +1164,6 @@ namespace Matrix2DTests {
         EXPECT_EQ(m2.getcol(), 2);
         EXPECT_EQ(m2.getrow(), 2);
         EXPECT_DOUBLE_EQ(m2(0, 0), 1);
-    }
-
-    TEST(Matrix2DTest, AssignmentFromMatrix) {
-        matrix<double> m(2, 2);
-        m[0][0] = 1; m[0][1] = 2;
-        m[1][0] = 3; m[1][1] = 4;
-
-        Matrix2D<double> m2d;
-        m2d = m;
-        EXPECT_EQ(m2d.getcol(), 2);
-        EXPECT_EQ(m2d.getrow(), 2);
-        EXPECT_DOUBLE_EQ(m2d(0, 0), 1);
     }
 
     // ------------------- Тесты доступа к данным -------------------
@@ -1486,19 +1461,6 @@ namespace Matrix2DTests {
         EXPECT_TRUE(m1 != m2);
     }
 
-    // ------------------- Тесты конвертации -------------------
-
-    TEST(Matrix2DTest, ToMatrix) {
-        Matrix2D<double> m2d = {{1, 2}, {3, 4}};
-        matrix<double> m = m2d.toMatrix();
-        EXPECT_EQ(m.getcol(), 2);
-        EXPECT_EQ(m.getrow(), 2);
-        EXPECT_DOUBLE_EQ(m[0][0], 1);
-        EXPECT_DOUBLE_EQ(m[0][1], 2);
-        EXPECT_DOUBLE_EQ(m[1][0], 3);
-        EXPECT_DOUBLE_EQ(m[1][1], 4);
-    }
-
     // ------------------- Тесты для ColumnMajor хранения -------------------
 
     TEST(Matrix2DTest, ColumnMajorStorage) {
@@ -1556,7 +1518,6 @@ namespace Matrix2DTests {
     }
 
 } // namespace Matrix2DTests
-#endif
 
 int main(int argc, char** argv) {
 #if 1
